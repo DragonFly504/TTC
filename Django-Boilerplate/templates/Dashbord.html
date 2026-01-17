@@ -1,0 +1,31 @@
+﻿{% extends 'base.html' %}
+{% block content %}
+<div class='container mt-5'>
+    <h2>Admin Dashboard - Manage Shipments</h2>
+    <table class='table'>
+        <thead><tr><th>Tracking Number</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+            {% for item in tracking_list %}
+            <tr>
+                <td>{{ item.tracking_number }}</td>
+                <td>{{ item.status }}</td>
+                <td>
+                    <form action='/update-status/{{ item.id }}/' method='post'>
+                        {% csrf_token %}
+                        <select name='status'>
+                            <option>Pending</option>
+                            <option>Picked Up</option>
+                            <option>In Transit</option>
+                            <option>Arrived at Hub</option>
+                            <option>Out for Delivery</option>
+                            <option>Delivered</option>
+                        </select>
+                        <button type='submit'>Update</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

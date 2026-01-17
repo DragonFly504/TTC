@@ -1,0 +1,320 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="TTCPWorldwide - Reliable global shipping and package tracking. Real-time GPS tracking, secure delivery, and 24/7 support for businesses and individuals.">
+  <meta name="keywords" content="global shipping, package tracking, logistics, delivery service">
+  <meta name="theme-color" content="#007bff">
+
+  <title>TTCPWorldwide – Global Shipping & Tracking</title>
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://unpkg.com">
+
+  <!-- Favicon -->
+  <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+  <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+
+  <!-- Local CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <!-- Accessible skip link -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-wrapper">
+      <a href="/" class="brand" aria-label="TTCPWorldwide home">
+        <img src="{% static 'images/logo.png' %}" alt="TTCPWorldwide logo" class="logo-header" width="50" height="50">
+        <span class="brand-text">TTCPWorldwide</span>
+      </a>
+
+      <nav class="main-nav" role="navigation" aria-label="Main navigation" id="main-nav">
+        <ul class="nav-list">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'tracking' %}">Track Package</a></li>
+  <li><a href="/services/">Services</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+</ul>
+<div class="nav-actions">
+  <a class="btn btn-outline" href="{% url 'signin' %}">Login</a>
+  <a class="btn btn-primary" href="{% url 'signup' %}">Sign Up</a>
+</div>
+
+
+      <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="main-nav">
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main-content" role="main" tabindex="-1">
+
+    <!-- Hero Section -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <div class="badge">
+            <i class="fas fa-shield-alt" aria-hidden="true"></i>
+            <span>Trusted by 10,000+ customers</span>
+          </div>
+
+          <h1 id="hero-title" class="hero-title">
+            Reliable Global Shipping.<br>
+            <span class="text-accent">Track Every Step.</span>
+          </h1>
+
+          <p class="hero-description">Fast, transparent parcel tracking and delivery for businesses and individuals.</p>
+
+          <!-- Tracking Form: submits to tracking view with ?q=TRACKING_ID -->
+          <form id="track-form" action="{% url 'tracking' %}" method="get" class="track-form" role="search" aria-label="Track package form">
+            <label for="tracking-q" class="sr-only">Enter tracking number</label>
+            <div class="input-group">
+              <input
+                id="tracking-q"
+                type="text"
+                name="q"
+                placeholder="Enter tracking number"
+                required
+                autocomplete="off"
+                aria-describedby="tracking-help">
+              <button type="submit" class="btn btn-track btn-large">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <span>Track Package</span>
+              </button>
+            </div>
+            <small id="tracking-help" class="form-help">Enter your tracking number to see real-time updates</small>
+          </form>
+
+          <div class="hero-actions">
+            <a href="/signup/" class="btn btn-secondary">
+              <i class="fas fa-user-plus" aria-hidden="true"></i>
+              <span>Create Free Account</span>
+            </a>
+            <!-- Extra CTA that explicitly links to tracking page -->
+            <a href="{% url 'tracking' %}" class="btn btn-outline">tracking Support</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div id="map-preview" class="map-preview" role="img" aria-label="Interactive tracking map preview"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" aria-labelledby="how-it-works-title">
+      <div class="container">
+        <h2 id="how-it-works-title" class="section-title">How It Works</h2>
+        <p class="section-subtitle">Get started in 3 simple steps</p>
+
+        <div class="steps-grid">
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">1</div>
+            <h3>Sign Up & Verify</h3>
+            <p>Create your free account and verify your email instantly.</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">2</div>
+            <h3>Get Tracking Number</h3>
+            <p>Receive a unique tracking ID for your shipment immediately.</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">3</div>
+            <h3>Track Live</h3>
+            <p>Monitor your package location in real-time on our interactive map.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" aria-labelledby="features-title">
+      <div class="container">
+        <h2 id="features-title" class="section-title">Why Choose TTCPWorldwide?</h2>
+        <p class="section-subtitle">Industry-leading features for seamless shipping</p>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true"><i class="fas fa-map-location-dot"></i></div>
+            <h3>Real-time Map Tracking</h3>
+            <p>Watch your package move on our live map with precise GPS tracking and status updates.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true"><i class="fas fa-shield-halved"></i></div>
+            <h3>Secure Email Verification</h3>
+            <p>Protect your shipments with advanced security and instant email verification.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true"><i class="fas fa-bell"></i></div>
+            <h3>Smart Notifications</h3>
+            <p>Stay informed with automated updates via email and SMS for every stage of delivery.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true"><i class="fas fa-clock"></i></div>
+            <h3>24/7 Support</h3>
+            <p>Our dedicated support team is available round the clock to assist you.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true"><i class="fas fa-chart-line"></i></div>
+            <h3>Analytics Dashboard</h3>
+            <p>Access detailed shipping analytics and performance metrics.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true"><i class="fas fa-globe-americas"></i></div>
+            <h3>Global Coverage</h3>
+            <p>Ship to over 200 countries with our trusted logistics network.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="cta-content">
+          <h2 id="cta-title">Ready to Start Shipping?</h2>
+          <p>Join thousands of satisfied customers shipping worldwide with TTCPWorldwide.</p>
+          <div class="cta-buttons">
+            <a href="/signup/" class="btn btn-primary">Get Started Free</a>
+            <!-- Ensure this goes to tracking -->
+            <a href="{% url 'tracking' %}" class="btn btn-outline">tracking Sales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <img src="{% static 'images/logo-footer.png' %}" alt="TTCPWorldwide" class="logo-footer" width="150" height="50">
+        <p>Your trusted partner for global shipping and tracking solutions.</p>
+      </div>
+
+      <nav class="footer-links" aria-label="Footer navigation">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/signin/">signin Policy</a></li>
+          <li><a href="/signup/">signup of Service</a></li>
+          <li><a href="/help/">Help Center</a></li>
+        </ul>
+      </nav>
+
+      <div class="footer-social">
+        <h4>Connect With Us</h4>
+        <ul class="social-links">
+          <li>
+            <a href="https://facebook.com/ttcpworldwide" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <i class="fab fa-facebook-f" aria-hidden="true"></i>
+              <span>Facebook</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/ttcpworldwide" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+              <i class="fab fa-twitter" aria-hidden="true"></i>
+              <span>Twitter</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://linkedin.com/company/ttcpworldwide" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+              <span>LinkedIn</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {% now "Y" %} TTCPWorldwide. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Back to top -->
+  <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js" crossorigin="anonymous" defer></script>
+  <script src="{% static 'js/main.js' %}" defer></script>
+
+  <!-- Inline initialization (move to main.js for production) -->
+  <script defer>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Skip link
+      const skip = document.querySelector('.skip-link');
+      if (skip) {
+        skip.addEventListener('click', function () {
+          const main = document.getElementById('main-content');
+          if (main) {
+            main.setAttribute('tabindex', '-1');
+            main.focus();
+          }
+        });
+      }
+
+      // Map preview
+      const mapEl = document.getElementById('map-preview');
+      if (mapEl && typeof L !== 'undefined') {
+        const map = L.map('map-preview', { scrollWheelZoom: false }).setView([40.7128, -74.0060], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const routeCoords = [
+          [40.7128, -74.0060],
+          [51.5074, -0.1278]
+        ];
+        L.polyline(routeCoords, { color: '#007bff', weight: 3, opacity: 0.7, dashArray: '10,10' }).addTo(map);
+        L.marker(routeCoords[0]).addTo(map).bindPopup('Origin: New York');
+        L.marker(routeCoords[1]).addTo(map).bindPopup('Destination: London');
+      }
+
+      // Mobile menu toggle
+      const mobileToggle = document.querySelector('.mobile-menu-toggle');
+      const nav = document.getElementById('main-nav');
+      if (mobileToggle && nav) {
+        mobileToggle.addEventListener('click', function () {
+          nav.classList.toggle('active');
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        });
+      }
+
+      // Back to top
+      const backToTop = document.getElementById('back-to-top');
+      if (backToTop) {
+        backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        window.addEventListener('scroll', () => {
+          backToTop.classList.toggle('visible', window.scrollY > 400);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

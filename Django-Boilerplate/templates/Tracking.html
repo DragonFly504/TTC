@@ -1,0 +1,65 @@
+﻿{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Track Shipment — TTC Worldwide</title>
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<<div class="container">
+  <h2 id="tracking-title">Tracking: <span id="tracking-number-display"></span></h2>
+  <div id="map" style="height:480px;border-radius:12px;"></div>
+  <div id="timeline"></div>
+</div>
+
+<script>
+  // Extract tracking number from URL
+  const params = new URLSearchParams(window.location.search);
+  const trackingNumber = params.get('q');
+
+  // Display it in the heading
+  if (trackingNumber) {
+    document.getElementById('tracking-number-display').textContent = trackingNumber;
+  } else {
+    document.getElementById('tracking-title').textContent = 'No tracking number provided';
+  }
+</script>
+
+  // Get tracking number from URL query string (?q=...)
+  const urlParams = new URLSearchParams(window.location.search);
+  const trackingNumber = urlParams.get('q');
+
+  const map = L.map('map').setView([0, 0], 2);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+  let marker = null;
+
+  async function loadData() {
+    if (!trackingNumber) return;
+
+    const res = await fetch(`/track/${trackingNumber}/`);
+    if (!res.ok) return;
+
+    const data = await res.json();
+
+    if (data.current_lat && data.current_lng) {
+      const lat = data.current_lat, lng = data.current_lng;
+      if (!marker) marker = L.marker([lat, lng]).addTo(map);
+      else marker.setLatLng([lat, lng]);
+      map.setView([lat, lng], 7);
+    }
+
+    const timeline = document.getElementById('timeline');
+    timeline.innerHTML = data.events.map(e =>
+      `<div class="event"><strong>${e.status}</strong> — ${e.timestamp}</div>`
+    ).join('');
+  }
+
+  loadData();
+  setInterval(loadData, 10000);
+</script>
+
+</body>
+</html>
