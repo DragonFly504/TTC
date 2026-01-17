@@ -45,6 +45,6 @@ echo -e "${GREEN}Services running:${NC}"
 docker-compose -f docker-compose.prod.yml ps
 
 echo -e "\n${YELLOW}Access your application:${NC}"
-echo -e "  Frontend: https://TTCworldwides.com"
-echo -e "  Backend: https://TTCworldwides.com/backend"
-echo -e "  Admin: https://TTCworldwides.com/admin"
+echo -e "  Frontend: https://ttcpworldwides.com"
+echo -e "  Backend API: https://ttcpworldwides.com/backend"
+echo -e "  Admin: https://ttcpworldwides.com/admin"
