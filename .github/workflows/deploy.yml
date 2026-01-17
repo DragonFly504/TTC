@@ -18,49 +18,32 @@ jobs:
       with:
         python-version: 3.11
     
-    - name: Install Python dependencies
+    - name: Install dependencies
       run: |
         cd Django-Boilerplate
-        python -m pip install --upgrade pip
         pip install -r requirements.txt
-      continue-on-error: true
     
-    - name: Run Django migrations
+    - name: Run Django tests
       run: |
         cd Django-Boilerplate
-        python manage.py migrate --run-syncdb || true
-      continue-on-error: true
+        python manage.py test
     
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
     
-    - name: Install MERN Backend dependencies
+    - name: Install Node dependencies
       run: |
         cd MERN-Boilerplate/backend
-        npm install --legacy-peer-deps
-      continue-on-error: true
-    
-    - name: Install MERN Frontend dependencies
-      run: |
-        cd MERN-Boilerplate/frontend
-        npm install --legacy-peer-deps
-      continue-on-error: true
+        npm install
+        cd ../frontend
+        npm install
     
     - name: Build React frontend
       run: |
         cd MERN-Boilerplate/frontend
-        CI=false npm run build
-      continue-on-error: true
-    
-    - name: Verify setup
-      run: |
-        echo "Python version:" && python --version
-        echo "Node version:" && node --version
-        echo "npm version:" && npm --version
-        echo "Docker version:" && docker --version || echo "Docker not installed in test environment"
-
+        npm run build
 
   deploy:
     needs: test
@@ -70,29 +53,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Configure SSH
+    - name: Deploy to cloud
+      env:
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
+        echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
-        ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
-      continue-on-error: true
-    
-    - name: Deploy to production
-      run: |
-        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} '
-          cd /var/www/ttc && \
-          git fetch origin && \
-          git checkout production && \
-          git pull origin production && \
-          docker-compose -f docker-compose.prod.yml down || true && \
-          docker-compose -f docker-compose.prod.yml up -d --build
-        '
-      continue-on-error: true
-    
-    - name: Verify deployment
-      run: |
-        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} '
-          docker-compose -f /var/www/ttc/docker-compose.prod.yml ps
-        '
-      continue-on-error: true
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_HOST 'cd /var/www/ttc && git pull origin production && docker-compose up -d --build'
